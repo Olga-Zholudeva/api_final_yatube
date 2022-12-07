@@ -28,6 +28,7 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         read_only_fields = ('post',)
 
+
 class GroupSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -55,5 +56,7 @@ class FollowSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if self.context.get('request').user == data['following']:
-            raise serializers.ValidationError('Нельзя подписаться на свои посты!')
+            raise serializers.ValidationError(
+                'Нельзя подписываться на свои посты!'
+            )
         return data
