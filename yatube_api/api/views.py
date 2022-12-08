@@ -1,18 +1,20 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import mixins, viewsets, permissions
-from posts.models import Group, Post
+from rest_framework import filters, mixins, permissions, viewsets
+from rest_framework.pagination import LimitOffsetPagination
+
+from api.permissions import AuthorOrReadOnly
 from api.serializers import (
+    CommentSerializer,
     FollowSerializer,
     GroupSerializer,
-    CommentSerializer,
     PostSerializer
 )
-from api.permissions import AuthorOrReadOnly
-from rest_framework.pagination import LimitOffsetPagination
-from rest_framework import filters
+
+from posts.models import Group, Post
 
 
 class PostViewSet(viewsets.ModelViewSet):
+    """Обрабатываем запросы к БД с постами."""
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = (AuthorOrReadOnly,)
@@ -23,6 +25,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
+    """Обрабатываем запросы к БД с комментариями."""
     serializer_class = CommentSerializer
     permission_classes = (AuthorOrReadOnly,)
 
@@ -39,6 +42,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
+    """Обрабатываем запросы к БД с группами постов."""
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
@@ -53,6 +57,7 @@ class CreateListViewSet(
 
 
 class FollowViewSet(CreateListViewSet):
+    """Обрабатываем комментарии к БД подписчиков."""
     serializer_class = FollowSerializer
     permission_classes = (permissions.IsAuthenticated,)
     filter_backends = (filters.SearchFilter,)
